@@ -1,4 +1,4 @@
-package com.cnepay.mq.quickstart;
+package com.cnepay.mq.Exchange.direct;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -10,7 +10,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * @author zhangyq
  */
-public class Procuder {
+public class Procuder4DirectExchange {
     public static void main(String[] args) throws IOException, TimeoutException {
         //1.创建一个ConnectionFactory，并进行配置
         ConnectionFactory connectionFactory = new ConnectionFactory();
@@ -25,14 +25,13 @@ public class Procuder {
         //3.通过Channection创建一个channel
         Channel channel = connection.createChannel();
 
-        //4.通过channel发送数据
-        String msg = "hello RabbitMq";
-        for(int i = 0;i<5;i++){
-            channel.basicPublish("","test001",null,msg.getBytes());
+        //4.声明
+        String exchangeName = "test_direct_echange";
+        String routingKey = "test.direct";
+        //5.发送
 
-        }
-        //5 记得关闭连接
-        channel.close();
-        connection.close();
+        String msg = "hello RabbitMQ 4 Direct Exchange";
+        channel.basicPublish(exchangeName,routingKey,null,msg.getBytes());
+
     }
 }

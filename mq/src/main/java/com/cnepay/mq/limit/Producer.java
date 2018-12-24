@@ -1,4 +1,4 @@
-package com.cnepay.mq.quickstart;
+package com.cnepay.mq.limit;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -10,29 +10,33 @@ import java.util.concurrent.TimeoutException;
 /**
  * @author zhangyq
  */
-public class Procuder {
+public class Producer {
     public static void main(String[] args) throws IOException, TimeoutException {
-        //1.创建一个ConnectionFactory，并进行配置
+        //1.创建ConnctionFactory
         ConnectionFactory connectionFactory = new ConnectionFactory();
-
         connectionFactory.setHost("192.168.1.105");
         connectionFactory.setPort(5672);
         connectionFactory.setVirtualHost("/");
-
-        //2.通过连接工厂创建连接
+        //2.获取connnetion
         Connection connection = connectionFactory.newConnection();
-
-        //3.通过Channection创建一个channel
+        //3.创建channel
         Channel channel = connection.createChannel();
+        //4.指定消息投递模式，消息确认模式
+        channel.confirmSelect();
 
-        //4.通过channel发送数据
-        String msg = "hello RabbitMq";
-        for(int i = 0;i<5;i++){
-            channel.basicPublish("","test001",null,msg.getBytes());
+        String exchange = "test_qos_exchange";
+        String routingKey = "qos.save";
 
+
+        String msg = "Hello RabbitMQ consumer Message";
+
+
+        //5.发送一个消息
+        for(int i=0;i<5;i++){
+            channel.basicPublish(exchange,routingKey,true,null,msg.getBytes());
         }
-        //5 记得关闭连接
-        channel.close();
-        connection.close();
+
+
+
     }
 }
